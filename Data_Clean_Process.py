@@ -1,13 +1,15 @@
 """This File contains functions for retrieving data from our postgresql server and cleaning it"""
 import psycopg2 as pg
 import pandas as pd
+import sql_server_connection as sql_con
 from sklearn.model_selection import train_test_split
 
 
-def download_data(key):
+def download_data():
     """This function takes as an argument the server password as a string and returns
     a dataframe """
-    #"K*%4t3VK0ab%gn"
+    
+    database, user, password, host, port = sql_con.connection()
     
     # this is a list of all the columns in the busniness database, we only want to grab
     # the ones that are not commented out, for various reasons.
@@ -92,7 +94,7 @@ def download_data(key):
     l_cutoff=10
     
     # this connects to the database, gets our data into a dataframe and closes the connection
-    con = pg.connect(database="postgres", user="flatiron_user_1", password=key, host="34.74.239.44", port="5432")
+    con = pg.connect(database=database, user=user, password=password, host=host, port=port)
     cur = con.cursor()
     
     cur.execute(f"SELECT {list_as_string} FROM business WHERE restaurant IS true AND REVIEW_COUNT < {u_cutoff} AND REVIEW_COUNT > {l_cutoff}")
